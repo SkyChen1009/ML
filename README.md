@@ -1,59 +1,67 @@
-# ML - Titanic Survival Prediction with H2O and Scikit-Learn
+# Titanic Survival Prediction
 
-# Titanic Survival Prediction with H2O and Scikit-Learn
+### This project uses machine learning techniques to predict passenger survival on the Titanic based on various features like age, gender, ticket class, and fare.
 
-This project uses machine learning techniques to predict Titanic passenger survival. The workflow includes data preprocessing, exploratory analysis, model building, and evaluation, using both traditional machine learning (Logistic Regression) and advanced methods (Ensemble Stacking, H2O AutoML).
+---
 
 ## Requirements
-
 - Python 3.x
-- Libraries: pandas, scikit-learn, h2o, xgboost
+- Libraries:
+   - Data manipulation: pandas, numpy
+   - Data visualization: matplotlib, seaborn
+   - Machine learning models: scikit-learn
+     
+## Setup
+1. **Library Imports:**
+   - Import necessary libraries for data manipulation (numpy, pandas), visualization (seaborn, matplotlib), and machine learning (scikit-learn).
+     
+2. **Google Drive Setup:**
+   - If using Google Colab, mount Google Drive to access data files.
 
-## Files
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
 
-- `train.csv`: Training dataset with survival labels and passenger features.
-- `test.csv`: Test dataset without survival labels.
-- `gender_submission.csv`: Sample submission file format.
+3. **Load Data:**
 
-## Data Processing Steps
+   - Load train.csv and test.csv datasets from Google Drive or local storage.
+```python
+test_df = pd.read_csv("/content/drive/MyDrive/Colab Notebooks/test.csv")
+train_df = pd.read_csv("/content/drive/MyDrive/Colab Notebooks/train.csv")
+```
 
-1. **Data Loading**: Load the training, test, and submission data.
-2. **Exploratory Data Analysis (EDA)**:
-   - Check dataset shapes, data types, and null values.
-   - Analyze unique values for categorical features.
-3. **Missing Value Handling**:
-   - Fill missing `Age` and `Fare` values with mean.
-   - Use most frequent value to fill missing `Cabin` and `Embarked` entries.
-4. **Label Encoding**:
-   - Encode categorical features (`Sex`, `Name`, `Ticket`, `Cabin`, `Embarked`) for model compatibility.
-5. **Feature Selection**:
-   - Drop irrelevant features like `PassengerId` and `Name` to reduce feature space.
+## Data Preprocessing Steps
+1. **Missing Data Analysis:**
+   - Check and summarize missing values in each column for targeted handling.
 
-## Model Training
+2. **Exploratory Data Analysis (EDA):**
+   - Visualize survival rates by gender and age, and examine relationships between other features and survival.
+     
+3. **Feature Engineering:**
+   - Create new features: relatives and not_alone indicate the number of family members onboard.
+   - Extract deck from cabin: Extract and encode deck information from the Cabin column and drop the original Cabin feature.
+   - Fill missing values in Age: Randomly assign ages based on mean and standard deviation of existing values.
+   - Encode categorical data: Map categorical values to numeric labels for Sex, Embarked, and Title.
+     
+4. **Feature Transformation:**
+   - Binning: Group Age and Fare into bins to simplify the model’s decision process.
+   - New combined features: Age_Class (product of Age and Pclass) and Fare_Per_Person (fare divided by the number of family members onboard).
 
-1. **Train-Test Split**:
-   - Split the data into 80% training and 20% validation for model evaluation.
-   
-2. **Models**:
-   - **Logistic Regression**: Baseline model with 1000 max iterations for initial prediction.
-   - **Ensemble Stacking**: Combined model with Random Forest, SVM, and XGBoost as base models, using Logistic Regression as the meta-model.
-   - **H2O AutoML**: Automated model selection with H2O’s AutoML for additional performance tuning.
+## Model Preparation
 
-3. **Model Evaluation**:
-   - Evaluate models using accuracy on the validation set.
+1. **Define Features and Target Variable:**
+   - Separate target variable Survived and features from train_df for model training.
+```python
+X_train = train_df.drop("Survived", axis=1)
+Y_train = train_df["Survived"]
+X_test  = test_df.drop("PassengerId", axis=1).copy()
+```
+2. **Algorithm Selection:**
+   - Prepare to experiment with various algorithms including LogisticRegression, RandomForestClassifier, SVC, KNeighborsClassifier, GaussianNB, and more to find the best model for predicting survival.
 
-## Running the Pipeline
-
-To execute the code, follow these steps:
-1. Install the required libraries, specifically H2O (`!pip install h2o`).
-2. Load data from the provided paths.
-3. Run each section sequentially: data loading, EDA, data preprocessing, model training, and evaluation.
-
-## Output
-
-- The final survival predictions are saved in a CSV file (`/content/drive/MyDrive/Colab Notebooks/sub.csv`) formatted for submission.
-- Additional predictions from H2O AutoML are saved as `h2o_submission.csv`.
-
-## Conclusion
-
-This pipeline offers a comprehensive approach to predict survival on the Titanic, utilizing traditional and advanced machine learning methods to improve accuracy and robustness.
+## Running the Project
+To replicate this analysis:
+1. ***Load the necessary datasets.***
+2. ***Execute each preprocessing and visualization step to inspect and transform the data.***
+3. ***Train and evaluate different models using the prepared X_train, Y_train, and X_test.***
